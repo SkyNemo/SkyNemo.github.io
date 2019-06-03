@@ -1778,7 +1778,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #a79c21;
+  background: #ff7da8;
 }
 .feed-link,
 .chat {
@@ -2543,7 +2543,7 @@ body {
   margin: 0px 10px;
 }
 .post {
-  background-color: rgba(255,255,255,0.95);
+  background-color: rgba(255,255,255,0.9);
   margin-bottom: 50px;
   padding: 36px;
   box-shadow: 3px 4px 12px 2px rgba(0,0,0,0.5);
@@ -2597,7 +2597,7 @@ body {
   color: #fff;
 }
 .footer {
-  background-color: rgba(255,255,255,0.95);
+  background-color: rgba(255,255,255,0.9);
   padding: 15px 0px 15px 0px;
   box-shadow: 3px 4px 12px 2px rgba(0,0,0,0.5);
   -webkit-box-shadow: 3px 4px 12px 0px rgba(0,0,0,0.5);
