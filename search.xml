@@ -6,8 +6,20 @@
     <content type="text"></content>
   </entry>
   <entry>
-    <title><![CDATA[test1]]></title>
-    <url>%2F2019%2F06%2F03%2Ftest1%2F</url>
-    <content type="text"></content>
+    <title><![CDATA[Hello World]]></title>
+    <url>%2F2019%2F06%2F03%2Fhello-world%2F</url>
+    <content type="text"><![CDATA[Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick StartCreate a new post1$ hexo new "My New Post" More info: Writing Run server1$ hexo server More info: Server Generate static files1$ hexo generate More info: Generating Deploy to remote sites1$ hexo deploy More info: Deployment]]></content>
+      <tags>
+        <tag>Testing</tag>
+        <tag>Another Tag</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[测试文章]]></title>
+    <url>%2F2019%2F05%2F29%2Ftest1%2F</url>
+    <content type="text"><![CDATA[0.设置语言博客框架默认的语言是英文，前往/themes/next/languages，查看当前NexT版本简体中文对照文件的名称是zh-Hans还是zh-CN。再前往根目录(站点配置文件)下的_config.yml，查找language，设置成language: zh-Hans或language: zh-CN，即显示简体中文。 1.设置菜单项 添加「标签」页面 （1）新建页面在终端窗口下，定位到 Hexo 站点目录下。使用 hexo new page 新建一个页面，命名为 tags ： 12$ cd your-hexo-site$ hexo new page tags INFO Created: your-hexo-site\source\tags\index.md （2）设置页面类型编辑刚新建的页面，将页面的类型设置为 tags ，主题将自动为这个页面显示标签云。页面内容如下： 123title: 标签date: 2014-12-22 12:39:04type: &quot;tags&quot; （3）修改菜单在菜单中添加链接。编辑 主题配置文件 ， 添加 tags 到 menu 中，如下: 1234menu: home: / archives: /archives tags: /tags （4）测试底下代码是一篇包含标签的文章的例子： 1234title: 标签测试文章tags: - Testing - Another Tag 2.添加分类页面新建「分类」页面，并在菜单中显示「分类」链接。「分类」页面将展示站点的所有分类，若你的所有文章都未包含分类，此页面将是空的。 底下代码是一篇包含分类的文章的例子： （1）新建页面在终端窗口下，定位到 Hexo 站点目录下。使用 hexo new page 新建一个页面，命名为 categories ： 12$ cd your-hexo-site$ hexo new page categories （2）设置页面类型编辑刚新建的页面，将页面的 type 设置为 categories ，主题将自动为这个页面显示分类。页面内容如下： 123title: 分类date: 2014-12-22 12:39:04type: &quot;categories&quot; （3）修改菜单在菜单中添加链接。编辑 主题配置文件 ， 添加 categories 到 menu 中，如下: 1234menu: home: / archives: /archives categories: /categories （4）测试底下代码是一篇包含标签的文章的例子： 123title: 分类测试文章categories: Testing--- 1.去掉主题顶部黑线打开：next\source\css_custom\custom.styl 添加代码：.headband {display:none;}保存刷新发现黑边没有了。 2.NexT主题下，用Leancloud统计文章阅读量（1）注册LeanCloud账号（2）创建应用（3）1.3 新应用名称(自定义) → 开发版 → 创建即可（4）创建Class @1.在创建的应用上点击存储 @2.数据栏中，_开头的都是系统预定义好的表，为了区分，新建一张表来保存数据。为了保证对NexT主题的修改兼容，新建Class名字必须为Counter。为了避免权限问题导致 次数统计显示不正常，选择无限制，创建Class。（5）获取App ID和App Key @1.Class创建完成后，选择界面最左侧的设置 → 应用Key，复制App ID和App Key @2.打开博客根目录/themes/next/下的_config.yml，查找leancloud，填写复制来的App ID和App Key，重新生成、部署博客即可正常统计文章阅读量 security: false 123456789leancloud_visitors: enable: true app_id: app_key: # Dependencies: https://github.com/theme-next/hexo-leancloud-counter-security # If you don&apos;t care about security in leancloud counter and just want to use it directly # (without hexo-leancloud-counter-security plugin), set `security` to `false`. security: false betterPerformance: false （6）说明因为AppID以及AppKey是暴露在外的，为了确保只用于我们自己的博客，建议设置Web安全域名，填入自己的博客域名。 记录文章访问量的唯一标识符是文章的发布日期和文章的标题，因此请确保这两个数值组合的唯一性，如果更改了这两个数值，会造成文章阅读数值的清零重计。 初始的文章统计量显示为0。在配置好阅读量统计服务之后，第一次打开博文时，会自动向服务器发送数据，该数据会被记录在对应的应用的Counter表中。 修改Counter表中的time字段的数值，可以修改文章的访问量。双击具体的数值，修改之后回车即可保存。 3.统计字数和阅读分钟数在根目录下面右键Git Bash Here输入代码：npm install hexo-symbols-count-time –save 打开根目录配置文件_config.yml添加代码：symbols_count_time: symbols: true time: true total_symbols: true total_time: true 打开主题配置文件_config.yml修改代码成：symbols_count_time: separated_meta: true item_text_post: true item_text_total: false awl: 4 wpm: 275 4.站点加速篇更改默认Google字体库访问系统总是会耗费一大部分的时间在加载google字体库上, 而且经常加载不成功. 方法一: 用国内的CDN库来替代主题中的google字体库, 到主题配置文件中设置默认字体库: host: fonts.useso.com方法二: 关掉字体库的引用, 默认加载本地字体库, 到主题配置文件设置: font: enable: false 5.网站底部版本主题显示取消打开主题配置文件_config.yml修改成一下代码： powered: # Hexo link (Powered by Hexo). enable: false # Version info of Hexo after Hexo link (vX.X.X). version: false theme: # Theme &amp; scheme info link (Theme - NexT.scheme). enable: false # Version info of NexT after scheme info (vX.X.X). version: false6.统计访客量和文章阅读数打开主题配置文件_config.yml修改代码： Show Views/Visitors of the website/page with busuanzi.Get more information on http://ibruce.info/2015/04/04/busuanzibusuanzi_count: enable: true total_visitors: true total_visitors_icon: user total_views: true total_views_icon: eye post_views: true post_views_icon: eye 刷新页面。]]></content>
+      <tags>
+        <tag>testing</tag>
+      </tags>
   </entry>
 </search>

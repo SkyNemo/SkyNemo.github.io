@@ -1778,7 +1778,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #a8daf5;
+  background: #c8e7b0;
 }
 .feed-link,
 .chat {
@@ -2531,7 +2531,7 @@ embed {
   letter-spacing: 3px;
 }
 .menu {
-  text-align: left;
+  text-align: center;
   margin-top: 0px;
   margin-bottom: 0px;
   padding: 5px;
@@ -2546,10 +2546,14 @@ embed {
 .post {
   background-color: rgba(255,255,255,0.9);
   margin-bottom: 50px;
-  padding: 20px;
+  padding-left: 35px;
+  padding-right: 35px;
+  padding-top: 10px;
+  padding-bottom: 10px;
   box-shadow: 3px 4px 12px 2px rgba(0,0,0,0.5);
   -webkit-box-shadow: 3px 4px 12px 0px rgba(0,0,0,0.5);
   -moz-box-shadow: 3px 4px 12px 0px rgba(0,0,0,0.5);
+  font-size: 16px;
 }
 .posts-expand .post-title {
   font-size: 26px;
@@ -2558,7 +2562,7 @@ embed {
 .out-img-topic {
   display: block;
   max-height: 500px;
-  margin-bottom: 24px;
+  margin-bottom: 15px;
   overflow: hidden;
 }
 img.img-topic {
@@ -2571,24 +2575,23 @@ img.img-topic {
   clear: right;
 }
 .posts-expand .post-meta {
-  margin: 10px 0px 20px 0px;
+  margin: 10px 0px 10px 0px;
+}
+.post-copyright-author {
+  margin-top: 5px;
+  font-size: 16px;
+}
+.post-copyright-license {
+  font-size: 16px;
+}
+.post-copyright-link {
+  font-size: 16px;
 }
 .post-button .btn {
   color: #555 !important;
   background-color: #fff;
-  border-radius: 3px;
   font-size: 15px;
-  box-shadow: inset 0px 0px 10px 0px rgba(0,0,0,0.35);
   border: none !important;
-  transition-property: unset;
-  padding: 0px 15px;
-}
-.post-button .btn:hover {
-  color: #fff !important;
-  border-radius: 3px;
-  font-size: 15px;
-  box-shadow: inset 0px 0px 10px 0px rgba(0,0,0,0.35);
-  background-image: linear-gradient(90deg, #a166ab 0%, #ef4e7b 25%, #f37055 50%, #ef4e7b 75%, #a166ab 100%);
 }
 .posts-expand .post-eof {
   margin: 0px;
@@ -2615,9 +2618,9 @@ img.img-topic {
 .footer {
   background-color: rgba(255,255,255,0.95);
   padding: 15px 0px 15px 0px;
-  box-shadow: 3px -4px 12px 2px rgba(0,0,0,0.5);
-  -webkit-box-shadow: 3px -4px 12px 0px rgba(0,0,0,0.5);
-  -moz-box-shadow: 3px -4px 12px 0px rgba(0,0,0,0.5);
+  box-shadow: 3px -1px 12px 2px rgba(0,0,0,0.5);
+  -webkit-box-shadow: 3px -1px 12px 0px rgba(0,0,0,0.5);
+  -moz-box-shadow: 3px -1px 12px 0px rgba(0,0,0,0.5);
 }
 .posts-expand .post-tags a {
   border-bottom: none;
@@ -2636,7 +2639,8 @@ img.img-topic {
   padding-top: 0px;
 }
 .post-nav {
-  margin-top: 30px;
+  margin-top: 15px;
+  margin-bottom: 5px;
 }
 .post-nav-item a {
   color: #5073b8;
@@ -2652,10 +2656,10 @@ img.img-topic {
   -webkit-box-shadow: 3px 4px 12px 0px rgba(0,0,0,0.5);
   -moz-box-shadow: 3px 4px 12px 0px rgba(0,0,0,0.5);
   margin: 0px 0px 40px 0px;
-  padding-left: 15px;
+  padding-left: 30px;
   padding-bottom: 10px;
-  padding-top: 10px;
-  padding-right: 15px;
+  padding-top: 15px;
+  padding-right: 30px;
 }
 a {
   color: #5073b8;
