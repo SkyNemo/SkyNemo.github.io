@@ -1778,7 +1778,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #ddbeff;
+  background: #440a0f;
 }
 .feed-link,
 .chat {
@@ -2835,8 +2835,8 @@ h2.about-title {
     letter-spacing: 0px !important;
   }
   .posts-expand {
-    padding-top: 50px;
-    margin: 0 15px;
+    padding-top: 30px;
+    margin: 0 18px;
   }
   .post {
     margin-top: 0px;
@@ -2845,7 +2845,7 @@ h2.about-title {
     padding-right: 18px;
   }
   .post-title {
-    margin-top: 12px;
+    margin-top: 18px;
     margin-bottom: 0px;
     line-height: 1;
   }
