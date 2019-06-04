@@ -1778,7 +1778,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #a4cbff;
+  background: #2ae9f0;
 }
 .feed-link,
 .chat {
@@ -2592,7 +2592,7 @@ img.img-topic {
   background-color: #fff;
   font-size: 15px;
   border: none !important;
-  margin-top: 15px;
+  margin-top: 10px;
 }
 .posts-expand .post-eof {
   margin: 0px;
@@ -2871,12 +2871,12 @@ h2.about-title {
     padding-top: 10px;
     padding-right: 18px;
   }
-  .posts-expand .post-meta .post-description {
-    font-style: italic;
-    font-size: 14px;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    color: #666;
+  .post-button .btn {
+    color: #555 !important;
+    background-color: #fff;
+    font-size: 15px;
+    border: none !important;
+    margin-top: 5px;
   }
 }
 p.description {
@@ -2884,7 +2884,9 @@ p.description {
   font-size: 14px;
   font-style: italic;
   color: #666;
-  margin-top: 30px;
+  margin-top: 20px;
+  margin-block-start: 0.3em;
+  margin-block-end: 0.3em;
 }
 .hide {
   display: none;
