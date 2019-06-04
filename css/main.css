@@ -1778,7 +1778,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #440a0f;
+  background: #a4cbff;
 }
 .feed-link,
 .chat {
@@ -2503,7 +2503,7 @@ embed {
   padding-bottom: 0px;
 }
 .posts-expand {
-  padding-top: 80px;
+  padding-top: 75x;
 }
 .posts-expand .post-meta {
   margin: 5px 0px 0px 0px;
@@ -2562,7 +2562,7 @@ embed {
 .out-img-topic {
   display: block;
   max-height: 500px;
-  margin-bottom: 15px;
+  margin-top: 20px;
   overflow: hidden;
 }
 img.img-topic {
@@ -2592,6 +2592,7 @@ img.img-topic {
   background-color: #fff;
   font-size: 15px;
   border: none !important;
+  margin-top: 15px;
 }
 .posts-expand .post-eof {
   margin: 0px;
@@ -2870,4 +2871,21 @@ h2.about-title {
     padding-top: 10px;
     padding-right: 18px;
   }
+  .posts-expand .post-meta .post-description {
+    font-style: italic;
+    font-size: 14px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    color: #666;
+  }
+}
+p.description {
+  text-align: center;
+  font-size: 14px;
+  font-style: italic;
+  color: #666;
+  margin-top: 30px;
+}
+.hide {
+  display: none;
 }

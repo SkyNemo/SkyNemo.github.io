@@ -3,7 +3,7 @@
   <entry>
     <title><![CDATA[test2]]></title>
     <url>%2F2019%2F06%2F03%2Ftest2%2F</url>
-    <content type="text"></content>
+    <content type="text"><![CDATA[页面在终端窗口下，定位到 Hexo 站点目录下。使用 hexo new page 新建一个页面，命名为 tags ： 12$ cd your-hexo-site$ hexo new page tags INFO Created: your-hexo-site\source\tags\index.md （2）设置页面类型编辑刚新建的页面，将页面的类型设置为 tags ，主题将自动为这个页面显示标签云。页面内容如下：``` title: 标签date: 2014-12-22 12:39:04type: “tags”]]></content>
   </entry>
   <entry>
     <title><![CDATA[Hello World]]></title>
