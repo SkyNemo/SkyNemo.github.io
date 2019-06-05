@@ -1778,7 +1778,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #877e28;
+  background: #ffc9fb;
 }
 .feed-link,
 .chat {
@@ -2894,7 +2894,7 @@ h2.about-title {
     background-image: url("https://skynemo-1258540788.cos.ap-chengdu.myqcloud.com/SkyNemo-Blog/background-img-p.jpg");
     background-repeat: no-repeat;
     background-attachment: fixed;
-    background-position: 100% 100%;
+    background-position: 50% 50%;
   }
 }
 p.description {
