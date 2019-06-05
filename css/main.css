@@ -1778,7 +1778,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #d67a60;
+  background: #a6ddff;
 }
 .feed-link,
 .chat {
@@ -2562,17 +2562,21 @@ embed {
 .out-img-topic {
   display: block;
   max-height: 500px;
-  margin-top: 20px;
+  margin-top: 10px;
   overflow: hidden;
 }
 img.img-topic {
-  width: 100%;
   display: block;
   margin-left: 0.7em;
   margin-right: 0.7em;
   padding: 0;
   float: right;
   clear: right;
+}
+.posts-expand .post-body img.img-topic {
+  width: 100%;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 .posts-expand .post-meta {
   margin: 10px 0px 10px 0px;
@@ -2769,12 +2773,6 @@ img:hover {
   background-color: #fff;
   padding: 106px 36px 36px 36px;
 }
-@media (max-width: 767px) {
-  .about-page {
-    margin: -73px 0px 50px 0px;
-    padding: 96px 15px 20px 15px;
-  }
-}
 h2.about-title {
   border-left: none !important;
   margin-left: 0px !important;
@@ -2887,6 +2885,16 @@ h2.about-title {
     padding-bottom: 10px;
     padding-top: 10px;
     padding-right: 18px;
+  }
+  .about-page {
+    margin: -73px 0px 50px 0px;
+    padding: 96px 15px 20px 15px;
+  }
+  body {
+    background-image: url("https://skynemo-1258540788.cos.ap-chengdu.myqcloud.com/SkyNemo-Blog/background-img-p.jpg");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: 50% 50%;
   }
 }
 p.description {
