@@ -1778,7 +1778,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #fff9c8;
+  background: #ecffba;
 }
 .feed-link,
 .chat {
@@ -2743,12 +2743,6 @@ pre .deletion {
   border: 2px solid #fff;
   border-radius: 100%;
   transition: transform 1s ease-out;
-}
-img:hover {
-  transform: rotateZ(360deg);
-}
-.posts-expand .post-body img:hover {
-  transform: initial;
 }
 .posts-collapse::after {
   margin-left: -2px;
