@@ -1778,7 +1778,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #f4ff14;
+  background: #e35b82;
 }
 .feed-link,
 .chat {
@@ -2167,6 +2167,10 @@ pre .javascript .function {
 }
 .highlight-wrap {
   position: relative;
+}
+.has-jax {
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 .page-archive .archive-page-counter {
   position: relative;
@@ -2604,6 +2608,10 @@ img.img-topic {
   padding: 0;
   float: right;
   clear: right;
+}
+th,
+td {
+  text-align: center;
 }
 .posts-expand .post-body img.img-topic {
   width: 100%;
