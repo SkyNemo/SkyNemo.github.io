@@ -1778,7 +1778,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #e35b82;
+  background: #ff1aff;
 }
 .feed-link,
 .chat {
@@ -2609,8 +2609,8 @@ img.img-topic {
   float: right;
   clear: right;
 }
-th,
-td {
+th[align="center"],
+td[align="center"] {
   text-align: center;
 }
 .posts-expand .post-body img.img-topic {
