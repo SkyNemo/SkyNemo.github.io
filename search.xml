@@ -3,7 +3,7 @@
   <entry>
     <title><![CDATA[大华研发技术支持笔试回顾]]></title>
     <url>%2F2019%2F12%2F25%2F%E5%AE%89%E9%98%B2%E5%9F%BA%E7%A1%80%2Fdahua-interview-2019-12-25%2F</url>
-    <content type="text"><![CDATA[笔试分为三部分：网络常见问题处理；SQL基础；操作系统基础 都是简答题，网络和Linux开放性比较强，应该主要看答题逻辑；操作系统基础以Linux命令居多，没想到会笔试这样的内容，之前命令都是各种补全或者help，没有刻意去记，吃大亏了，以下是部分题目 网络PC机A可以ping通PC机B的IP，但PC机B不能ping通PC机A的IP，如何排查问题?目前能想到的就三个原因： 防火墙拦截了ICMP报文 取消您两台电脑上的防火墙设置（实际项目上该情况最多） APR病毒 APR病毒导致PC机A ping 的B不一定是真正的B，PC机B ping 的A也不一定是真正的A；通过arp -a 与ipconfig /all 来判断A确实是A，B确实是B 网络波动 判断网络里是否有大量的广播包在影响网络通信 最后尝试：PC机B tracert PC机IP，判断哪里出了问题 画出某个网络拓扑图（家庭，学校，某个项目的都行）这个网上找吧。。。 SQL前面都是基本的增删改查，较简单，最后一题如下： mysql备份还原的方式有哪些？命令方式： 备份： mysqldump备份单个数据库： 1mysqldump -u ``user` `-h host -p ``password` `dbname&gt;filename.sql mysqldump备份数据库中的指定表 1mysqldump -u ``user` `-h host -p ``password` `dbname[tbname,[tbname…]]&gt;filename.sql mysqldump备份多个数据库 1mysqldump -u user -h host -p password --databases[dbname,[dbname…]]&gt;filename.sql 备份系统中所有的数据库 1mysqldump -u user -h host -p password --all-databases&gt;filename.sql 还原： 1mysql -u username -p [dbname] &lt; filename.sql SQLyog 工具 可以用sqlyog等工具备份还原 操作系统Windows系统和Linux系统查看端口是否被占用用什么命令？Windows： 1234#查看端口被占用情况netstat -aon|findstr "80"#查看相关进程tasklist|findstr "80" Linux： 123netstat -nlp | grep 8080#或者lsof -i:8080 Linux疑似中毒，如何排查，写出命令？ top查看什么进程占用了资源 用lsof -p &lt;PID&gt;,查看疑似病毒进程 w查看当前都有谁在登录 history回顾命令历史 ps检查所有的系统进程 netstat查看异常的网络连接 cat /etc/rc.local查看是否有异常内容 tcpdump抓包查看是否有报文发送到异常IP 暂时想到就这些了。。。]]></content>
+    <content type="text"><![CDATA[笔试分为三部分：网络常见问题处理；SQL基础；操作系统基础 都是简答题，网络和Linux开放性比较强，应该主要看答题逻辑；操作系统基础以Linux命令居多，没想到会笔试这样的内容，之前命令都是各种补全或者help，没有刻意去记，吃大亏了，以下是部分题目 网络PC机A可以ping通PC机B的IP，但PC机B不能ping通PC机A的IP，如何排查问题?目前能想到的就三个原因： 防火墙拦截了ICMP报文 取消您两台电脑上的防火墙设置（实际项目上该情况最多） APR病毒 APR病毒导致PC机A ping 的B不一定是真正的B，PC机B ping 的A也不一定是真正的A；通过arp -a 与ipconfig /all 来判断A确实是A，B确实是B 网络波动 判断网络里是否有大量的广播包在影响网络通信 最后尝试：PC机B tracert PC机IP，判断哪里出了问题 画出某个网络拓扑图（家庭，学校，某个项目的都行）这个网上找吧。。。 SQL前面都是基本的增删改查，较简单，最后一题如下： mysql备份还原的方式有哪些？命令方式： 备份： mysqldump备份单个数据库： 1mysqldump -u user -h host -p password dbname&gt;filename.sql mysqldump备份数据库中的指定表 1mysqldump -u user -h host -p password dbname[tbname,[tbname…]]&gt;filename.sql mysqldump备份多个数据库 1mysqldump -u user -h host -p password --databases[dbname,[dbname…]]&gt;filename.sql 备份系统中所有的数据库 1mysqldump -u user -h host -p password --all-databases&gt;filename.sql 还原： 1mysql -u username -p [dbname] &lt; filename.sql SQLyog 工具 可以用sqlyog等工具备份还原 操作系统Windows系统和Linux系统查看端口是否被占用用什么命令？Windows： 1234#查看端口被占用情况netstat -aon|findstr "80"#查看相关进程tasklist|findstr "80" Linux： 123netstat -nlp | grep 8080#或者lsof -i:8080 Linux疑似中毒，如何排查，写出命令？ top查看什么进程占用了资源 用lsof -p &lt;PID&gt;,查看疑似病毒进程 w查看当前都有谁在登录 history回顾命令历史 ps检查所有的系统进程 netstat查看异常的网络连接 cat /etc/rc.local查看是否有异常内容 tcpdump抓包查看是否有报文发送到异常IP 暂时想到就这些了。。。]]></content>
       <categories>
         <category>安防基础</category>
       </categories>
@@ -30,8 +30,8 @@
         <category>安防基础</category>
       </categories>
       <tags>
-        <tag>计算机基础</tag>
         <tag>安防基础</tag>
+        <tag>计算机基础</tag>
       </tags>
   </entry>
   <entry>
