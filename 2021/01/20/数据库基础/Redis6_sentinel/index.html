@@ -1,0 +1,412 @@
+<!DOCTYPE html><html class="theme-next muse use-motion" lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=2"><meta name="theme-color" content="#222"><link rel="stylesheet" href="/lib/fancybox/source/jquery.fancybox.css"><link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2"><link rel="stylesheet" href="/css/main.css?v=7.1.1"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.1"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.1"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.1"><link rel="mask-icon" href="/images/logo.svg?v=7.1.1" color="#222"><script id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Muse",version:"7.1.1",sidebar:{position:"left",display:"post",offset:12,onmobile:!1,dimmer:!1},back2top:!0,back2top_sidebar:!1,fancybox:!0,fastclick:!1,lazyload:!0,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><script>!function(e,t,o,c,i,a,n){e.DaoVoiceObject=i,e[i]=e[i]||function(){(e[i].q=e[i].q||[]).push(arguments)},e[i].l=1*new Date,a=t.createElement(o),n=t.getElementsByTagName(o)[0],a.async=1,a.src=c,a.charset="utf-8",n.parentNode.insertBefore(a,n)}(window,document,"script",("https:"==document.location.protocol?"https:":"http:")+"//widget.daovoice.io/widget/0f81ff2f.js","daovoice"),daovoice("init",{app_id:"c00e14a8"}),daovoice("update")</script><meta name="description" content="CentOS 7 上Redis 哨兵简介以及配置"><meta name="keywords" content="数据库基础,redis"><meta property="og:type" content="article"><meta property="og:title" content="CentOS 7 上Redis 哨兵简介以及配置"><meta property="og:url" content="https://www.skynemo.cn/2021/01/20/数据库基础/Redis6_sentinel/index.html"><meta property="og:site_name" content="Nemo的技术长路"><meta property="og:description" content="CentOS 7 上Redis 哨兵简介以及配置"><meta property="og:locale" content="zh-CN"><meta property="og:image" content="https://skynemo-1258540788.cos.ap-chengdu.myqcloud.com/SkyNemo-Blog/database/Redis/Redis_6_x/03_redis6_sentinel/01_structure_chart.png"><meta property="og:updated_time" content="2021-01-20T07:15:07.169Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="CentOS 7 上Redis 哨兵简介以及配置"><meta name="twitter:description" content="CentOS 7 上Redis 哨兵简介以及配置"><meta name="twitter:image" content="https://skynemo-1258540788.cos.ap-chengdu.myqcloud.com/SkyNemo-Blog/database/Redis/Redis_6_x/03_redis6_sentinel/01_structure_chart.png"><link rel="canonical" href="https://www.skynemo.cn/2021/01/20/数据库基础/Redis6_sentinel/"><script id="page.configurations">CONFIG.page={sidebar:""}</script><title>CentOS 7 上Redis 哨兵简介以及配置 | Nemo的技术长路</title><noscript><style>.sidebar-inner,.use-motion .brand,.use-motion .collection-title,.use-motion .comments,.use-motion .menu-item,.use-motion .motion-element,.use-motion .pagination,.use-motion .post-block,.use-motion .post-body,.use-motion .post-header{opacity:initial}.use-motion .logo,.use-motion .site-subtitle,.use-motion .site-title{opacity:initial;top:initial}.use-motion .logo-line-before i{left:initial}.use-motion .logo-line-after i{right:initial}</style></noscript></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">Nemo的技术长路</span><span class="logo-line-after"><i></i></span></a></div></div><div class="site-nav-toggle"> <button aria-label="切换导航栏"><span class="btn-bar"></span><span class="btn-bar"></span><span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i><br>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i><br>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>归档</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i><br>关于</a></li><li class="menu-item menu-item-search"><a href="javascript:;" class="popup-trigger"><i class="menu-item-icon fa fa-search fa-fw"></i><br>搜索</a></li></ul><div class="site-search"><div class="popup search-popup local-search-popup"><div class="local-search-header clearfix"><span class="search-icon"><i class="fa fa-search"></i></span><span class="popup-btn-close"><i class="fa fa-times-circle"></i></span><div class="local-search-input-wrapper"> <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input"></div></div><div id="local-search-result"></div></div></div></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="https://www.skynemo.cn/2021/01/20/数据库基础/Redis6_sentinel/"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Nemo"><meta itemprop="description" content><meta itemprop="image" content="https://skynemo-1258540788.cos.ap-chengdu.myqcloud.com/SkyNemo-Blog/icon.jpg"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="Nemo的技术长路"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">CentOS 7 上Redis 哨兵简介以及配置</h1><div class="post-meta"><i class="fa fa-thumb-tack"></i> <font color="7D26CD">置顶</font> <span class="post-meta-divider">|</span><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i></span> <span class="post-meta-item-text">发表于</span> <time title="创建时间：2021-01-20 15:12:21 / 修改时间：15:15:07" itemprop="dateCreated datePublished" datetime="2021-01-20T15:12:21+08:00">2021-01-20</time></span> <span class="post-category"><span class="post-meta-divider">|</span><span class="post-meta-item-icon"><i class="fa fa-folder-o"></i></span> <span class="post-meta-item-text">分类于</span> <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/数据库基础/" itemprop="url" rel="index"><span itemprop="name">数据库基础</span></a></span></span> <span class="post-comments-count"><span class="post-meta-divider">|</span><span class="post-meta-item-icon"><i class="fa fa-comment-o"></i></span> <span class="post-meta-item-text">评论数：</span><a href="/2021/01/20/数据库基础/Redis6_sentinel/#comments" itemprop="discussionUrl"><span class="post-comments-count valine-comment-count" data-xid="/2021/01/20/数据库基础/Redis6_sentinel/" itemprop="commentCount"></span></a></span> <span id="/2021/01/20/数据库基础/Redis6_sentinel/" class="leancloud_visitors" data-flag-title="CentOS 7 上Redis 哨兵简介以及配置"><span class="post-meta-divider">|</span><span class="post-meta-item-icon"><i class="fa fa-eye"></i></span> <span class="post-meta-item-text">阅读次数：</span><span class="leancloud-visitors-count"></span></span><div class="post-symbolscount"> <span class="post-meta-divider">|</span><span class="post-meta-item-icon"><i class="fa fa-clock-o"></i></span> <span class="post-meta-item-text">阅读时长 &asymp;</span> <span title="阅读时长">27 分钟</span></div><div class="post-description"><blockquote class="blockquote-center">CentOS 7 上Redis 哨兵简介以及配置</blockquote></div></div></header><div class="post-body" itemprop="articleBody"><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>redis主从虽然解决了单点导致的数据丢失问题，但是在主库宕机后，从库无法自动切换为主库，需要手工去切换，在这一瞬间会对后端数据库造成极大的负载，可能直接导致后端数据宕机，所以需要哨兵对主从系统进行优化</p><h3 id="哨兵的工作原理"><a href="#哨兵的工作原理" class="headerlink" title="哨兵的工作原理"></a>哨兵的工作原理</h3><p>哨兵（Sentinel） 是一个分布式系统，可以在一个架构中运行多个哨兵（Sentinel）进程，这些进程使用流言协议（gossipprotocols）来接收关于master是否下线的信息，并使用投票协议（agreement protocols） 来决定是否执行自动故障迁移，并选择某个slave作为新的master</p><p>每个哨兵（Sentinel） 会向其它哨兵（Sentinel）、master、slave定时发送消息，以确认对方是否上线，如果发现对方在指定时间内未回应，则暂时认为对方宕机了，这就是所谓的<strong>主观宕机</strong>（<strong>Subjective Down</strong>，简称<strong>sdown</strong>）。 若哨兵集群中的多数Sentinel，都报告某一master没响应，系统才认为该master真正宕机，即<strong>客观宕机</strong>，（<strong>Objective Down</strong>，简称<strong>odown</strong>），通过一定的vote算法，从剩下的slave节点中，选一台提升为 master，然后自动修改相关配置</p><h3 id="哨兵的主要作用"><a href="#哨兵的主要作用" class="headerlink" title="哨兵的主要作用"></a>哨兵的主要作用</h3><ul><li>监控：监控redis主库及从库运行状态</li><li>通知：如果redis发生故障转移，可以通过自动运行脚本以通知管理员</li><li>自动故障转移：：一旦发现主库宕机，则在从库中通过选举新的master进行故障转移</li></ul><p>官方建议基础的哨兵系统至少部署三个Sentinel实例，才能保证系统的健壮性，这三个Sentinel实例应该被放置到独立的计算机或虚拟机中，这些计算机或虚拟机以独立的方式发生故障</p><h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><p><strong>整体结构如下图</strong></p> <img src="https://skynemo-1258540788.cos.ap-chengdu.myqcloud.com/SkyNemo-Blog/database/Redis/Redis_6_x/03_redis6_sentinel/01_structure_chart.png" style="zoom:80%"><p><strong>redis</strong></p><table><thead><tr><th align="center">主机</th><th align="center">IP</th><th align="center">服务</th><th align="center">角色</th></tr></thead><tbody><tr><td align="center">node1</td><td align="center">192.168.1.171</td><td align="center">redis 6.0.5</td><td align="center">master</td></tr><tr><td align="center">node2</td><td align="center">192.168.1.172</td><td align="center">redis 6.0.5</td><td align="center">slave</td></tr><tr><td align="center">node3</td><td align="center">192.168.1.173</td><td align="center">redis 6.0.5</td><td align="center">slave</td></tr></tbody></table><p><strong>Sentinel</strong></p><blockquote><p>Sentinel系统中有三台sentinel节点</p></blockquote><table><thead><tr><th align="center">主机</th><th align="center">IP</th><th align="center">角色</th></tr></thead><tbody><tr><td align="center">node1</td><td align="center">192.167.1.171</td><td align="center">sentinel</td></tr><tr><td align="center">node2</td><td align="center">192.168.1.172</td><td align="center">sentinel</td></tr><tr><td align="center">node3</td><td align="center">192.168.1.173</td><td align="center">sentinel</td></tr></tbody></table><p>三台主机均安装redis完成，安装redis详见：<a href="https://www.skynemo.cn/2020/06/08/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80/centos7_redis6_install/">CentOS 7 安装Redis 6.x</a></p><h2 id="配置主从"><a href="#配置主从" class="headerlink" title="配置主从"></a>配置主从</h2><h3 id="master（node1）配置"><a href="#master（node1）配置" class="headerlink" title="master（node1）配置"></a>master（node1）配置</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[root@node1 ~]# vim /redis/conf/redis_6379.conf </span><br><span class="line"><span class="meta">#</span> 绑定地址</span><br><span class="line">bind 192.168.1.171 127.0.0.1 </span><br><span class="line"><span class="meta">#</span> 绑定端口</span><br><span class="line">port 6379</span><br><span class="line"><span class="meta">#</span> 配置密码</span><br><span class="line">requirepass master123..</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> 由于slave配置了密码，发生故障转移重连后需要进行认证，所以此处也需要配置连接master的密码</span><br><span class="line">masterauth master123..</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> 重启服务</span><br><span class="line">[root@node1 ~]# systemctl restart redis</span><br></pre></td></tr></table></figure><h3 id="slave（node2、node3）配置"><a href="#slave（node2、node3）配置" class="headerlink" title="slave（node2、node3）配置"></a>slave（node2、node3）配置</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[root@node2 ~]#  vim /redis/conf/redis_6379.conf </span><br><span class="line"><span class="meta">#</span> 绑定主机对应的IP地址</span><br><span class="line">bind 192.168.1.172 127.0.0.1</span><br><span class="line"><span class="meta">#</span> 绑定端口</span><br><span class="line">port 6379</span><br><span class="line"><span class="meta">#</span> 配置密码</span><br><span class="line">requirepass master123..</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> 配置master网络信息</span><br><span class="line">replicaof 192.168.1.171 6379</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> 配置master密码</span><br><span class="line">masterauth master123..</span><br><span class="line"></span><br><span class="line">[root@node2 ~]# systemctl restart redis</span><br></pre></td></tr></table></figure><h3 id="检查主从状态"><a href="#检查主从状态" class="headerlink" title="检查主从状态"></a>检查主从状态</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">[root@node1 ~]# redis-cli</span><br><span class="line">127.0.0.1:6379&gt; auth master123..</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:6379&gt; info replication</span><br><span class="line"><span class="meta">#</span> Replication</span><br><span class="line">role:master</span><br><span class="line">connected_slaves:2</span><br><span class="line">slave0:ip=192.168.1.172,port=6379,state=online,offset=658,lag=0</span><br><span class="line">slave1:ip=192.168.1.173,port=6379,state=online,offset=658,lag=0</span><br><span class="line">master_replid:3ed47ad32a3466041ac62eeac70c39f5f05589e6</span><br><span class="line">master_replid2:0000000000000000000000000000000000000000</span><br><span class="line">master_repl_offset:658</span><br><span class="line">second_repl_offset:-1</span><br><span class="line">repl_backlog_active:1</span><br><span class="line">repl_backlog_size:1048576</span><br><span class="line">repl_backlog_first_byte_offset:1</span><br><span class="line">repl_backlog_histlen:658</span><br></pre></td></tr></table></figure><h2 id="配置哨兵"><a href="#配置哨兵" class="headerlink" title="配置哨兵"></a>配置哨兵</h2><blockquote><p>三台主机均操作，配置除绑定IP外均相同</p></blockquote><h3 id="配置哨兵-1"><a href="#配置哨兵-1" class="headerlink" title="配置哨兵"></a>配置哨兵</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span> 创建sentinel工作目录</span><br><span class="line">[root@node1 ~]# mkdir -p /redis/sentinel/26379</span><br><span class="line"><span class="meta">#</span> 将安装时的哨兵配置文件复制到相应目录</span><br><span class="line">[root@node1 ~]# cp redis-stable/sentinel.conf /redis/conf/sentinel_26379.conf</span><br><span class="line"><span class="meta">#</span> 配置哨兵</span><br><span class="line">[root@node1 ~]# vim /redis/conf/sentinel_26379.conf </span><br><span class="line"><span class="meta">#</span> 绑定IP，建议直接配成0.0.0.0</span><br><span class="line"><span class="meta">#</span> 如果sentinel配置了bind参数，sentinel将获取第一个ip去检测主节点状态, </span><br><span class="line"><span class="meta">#</span> 由于127.0.0.1是个回环地址，所以当bind第一个ip配置成127.0.0.1时无法连接其他机器的ip，</span><br><span class="line"><span class="meta">#</span> 所以配置时第一个ip不能配置为回环地址，建议redis相关的ip绑定都先写私网ip再写回环ip</span><br><span class="line">bind 192.168.1.171 127.0.0.1</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> 配置后台运行</span><br><span class="line">daemonize yes</span><br><span class="line"><span class="meta">#</span> 日志路径</span><br><span class="line">logfile "/redis/log/sentinel_26379.log"</span><br><span class="line"><span class="meta">#</span> 配置工作目录</span><br><span class="line">dir /redis/sentinel/26379</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> 配置redis的master名称、ip和端口；若需要监视多个master-slave组，则配置多条master信息</span><br><span class="line"><span class="meta">#</span> 2代表只有两个或两个以上的哨兵认为主服务器不可用的时候，才会进行failover操作</span><br><span class="line"><span class="meta">#</span> 建议将其设置为 Sentinel 节点的一半加1</span><br><span class="line">sentinel monitor redis_master 192.168.1.171 6379 2</span><br><span class="line"><span class="meta">#</span> 配置master密码</span><br><span class="line">sentinel auth-pass redis_master master123..</span><br><span class="line"><span class="meta">#</span> 配置sentinel监控master回复时间，默认30秒，30秒内没有回复，则认为下线了</span><br><span class="line">sentinel down-after-milliseconds redis_master 30000</span><br><span class="line"><span class="meta">#</span> 指定在故障转移期间，多少个slave向新的master同步得数量，如果slave是提供查询服务，则应该设置小一点</span><br><span class="line">sentinel parallel-syncs redis_master 1</span><br><span class="line"><span class="meta">#</span> 指定故障转移超时时间，默认为3分钟</span><br><span class="line">sentinel failover-timeout redis_master 180000</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> 设置通知脚本，发生故障转移可以向管理员发送通知（可选）</span><br><span class="line">sentinel notification-script redis_master /redis/sentinel/notify.sh</span><br><span class="line"><span class="meta">#</span> 禁止修改脚本，避免脚本重置</span><br><span class="line">sentinel deny-scripts-reconfig yes</span><br></pre></td></tr></table></figure><h3 id="配置通知脚本（可选）"><a href="#配置通知脚本（可选）" class="headerlink" title="配置通知脚本（可选）"></a>配置通知脚本（可选）</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">[root@node1 ~]# vim /redis/sentinel/notify.sh</span><br><span class="line"><span class="meta">#</span>!/bin/bash</span><br><span class="line"></span><br><span class="line">MAIL_TO="sky.nemo@outlook.com"</span><br><span class="line">SUBJECT="redis 发生故障转移"</span><br><span class="line">CONTEXT="redis 发生故障转移"</span><br><span class="line">echo -e "$CONTEXT"|mailx -s "$SUBJECT" "$MAIL_TO"</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> 给脚本赋执行权限</span><br><span class="line">[root@node1 ~]# chmod 755 /redis/sentinel/notify.sh</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> 安装邮件通知</span><br><span class="line">[root@node1 ~]# yum install mailx -y</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> 配置发件人信息，发件人邮箱需开启SMTP服务</span><br><span class="line">[root@node1 ~]# vim /etc/mail.rc </span><br><span class="line"><span class="meta">#</span> mail info</span><br><span class="line">set from="operation_smtp@163.com"</span><br><span class="line">set smtp=smtp.163.com</span><br><span class="line">set smtp-auth-user=operation_smtp</span><br><span class="line"><span class="meta">#</span> 开启SMTP服务时得到的授权码</span><br><span class="line">set smtp-auth-password=</span><br><span class="line">set smtp-auth=login</span><br></pre></td></tr></table></figure><h3 id="配置systemd管理"><a href="#配置systemd管理" class="headerlink" title="配置systemd管理"></a>配置systemd管理</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[root@node1 ~]# vim /etc/systemd/system/redis_sentinel.service</span><br><span class="line">[Unit]</span><br><span class="line">Description=redis-sentinel</span><br><span class="line">After=network.target</span><br><span class="line">[Service]</span><br><span class="line">Type=forking</span><br><span class="line">ExecStart=/redis/app/bin/redis-sentinel /redis/conf/sentinel_26379.conf</span><br><span class="line">[Install]</span><br><span class="line">WantedBy=multi-user.target</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> 重载systemd配置</span><br><span class="line">[root@node1 ~]# systemctl daemon-reload</span><br><span class="line"><span class="meta">#</span> 启动哨兵</span><br><span class="line">[root@node1 ~]# systemctl start redis_sentinel</span><br></pre></td></tr></table></figure><h3 id="检查哨兵状态"><a href="#检查哨兵状态" class="headerlink" title="检查哨兵状态"></a>检查哨兵状态</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span> 连接sentinel</span><br><span class="line">[root@node1 ~]# redis-cli -p 26379 -h 192.168.1.171</span><br><span class="line"><span class="meta">#</span> 查看sentinel信息</span><br><span class="line">192.168.1.171:26379&gt; info sentinel</span><br><span class="line"><span class="meta">#</span> Sentinel</span><br><span class="line">sentinel_masters:1</span><br><span class="line">sentinel_tilt:0</span><br><span class="line">sentinel_running_scripts:0</span><br><span class="line">sentinel_scripts_queue_length:0</span><br><span class="line">sentinel_simulate_failure_flags:0</span><br><span class="line"><span class="meta">#</span> 可以看到当前监控的master在线状态，IP信息，slave数量、sentinel数量等</span><br><span class="line">master0:name=redis_master,status=ok,address=192.168.1.171:6379,slaves=2,sentinels=3</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> 查看除当前节点外其他sentinel节点详细信息</span><br><span class="line">192.168.1.171:26379&gt; sentinel sentinels redis_master</span><br></pre></td></tr></table></figure><h2 id="验证故障转移"><a href="#验证故障转移" class="headerlink" title="验证故障转移"></a>验证故障转移</h2><h3 id="当前状态"><a href="#当前状态" class="headerlink" title="当前状态"></a>当前状态</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span> 启动时可以看到如下日志</span><br><span class="line">[root@node2 ~]# tail -f /redis/log/sentinel_26379.log </span><br><span class="line">20572:X 19 Jan 2021 13:09:46.156 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo</span><br><span class="line">20572:X 19 Jan 2021 13:09:46.157 # Redis version=6.0.5, bits=64, commit=00000000, modified=0, pid=20572, just started</span><br><span class="line">20572:X 19 Jan 2021 13:09:46.157 # Configuration loaded</span><br><span class="line">20573:X 19 Jan 2021 13:09:46.171 * Increased maximum number of open files to 10032 (it was originally set to 1024).</span><br><span class="line">20573:X 19 Jan 2021 13:09:46.173 * Running mode=sentinel, port=26379.</span><br><span class="line">20573:X 19 Jan 2021 13:09:46.173 # WARNING: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.</span><br><span class="line">20573:X 19 Jan 2021 13:09:46.174 # Sentinel ID is 692bfddd9b7bfb87a6920588e1851a967a2d2839</span><br><span class="line"><span class="meta">#</span> 检测到主机</span><br><span class="line">20573:X 19 Jan 2021 13:09:46.174 # +monitor master redis_master 192.168.1.171 6379 quorum 2</span><br><span class="line"><span class="meta">#</span> 检测到主机的两台从机</span><br><span class="line">20573:X 19 Jan 2021 13:09:46.180 * +slave slave 192.168.1.172:6379 192.168.1.172 6379 @ redis_master 192.168.1.171 6379</span><br><span class="line">20573:X 19 Jan 2021 13:09:46.189 * +slave slave 192.168.1.173:6379 192.168.1.173 6379 @ redis_master 192.168.1.171 6379</span><br><span class="line"><span class="meta">#</span> 检测到其他两台哨兵上线</span><br><span class="line">20573:X 19 Jan 2021 13:13:35.581 * +sentinel sentinel a19143eabf9605d7a8d6276fe9f1f02adf8c744f 192.168.1.171 26379 @ redis_master 192.168.1.171 6379</span><br><span class="line">20573:X 19 Jan 2021 13:13:56.377 * +sentinel sentinel bcc5b607e7b7fef3be5691065a5d6665201a44fd 192.168.1.173 26379 @ redis_master 192.168.1.171 6379</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> 检查当前主节点信息，可以看到，此时主节点是node1（192.168.1.171），从节点有两个</span><br><span class="line">[root@node2 ~]# redis-cli -p 26379 -h 192.168.1.172</span><br><span class="line">192.168.1.172:26379&gt; info sentinel</span><br><span class="line"><span class="meta">#</span> Sentinel</span><br><span class="line">sentinel_masters:1</span><br><span class="line">sentinel_tilt:0</span><br><span class="line">sentinel_running_scripts:0</span><br><span class="line">sentinel_scripts_queue_length:0</span><br><span class="line">sentinel_simulate_failure_flags:0</span><br><span class="line">master0:name=redis_master,status=ok,address=192.168.1.171:6379,slaves=2,sentinels=3</span><br></pre></td></tr></table></figure><h3 id="断开node1（master）网络"><a href="#断开node1（master）网络" class="headerlink" title="断开node1（master）网络"></a>断开node1（master）网络</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span> 查看日志</span><br><span class="line">[root@node2 ~]# tail -f /redis/log/sentinel_26379.log </span><br><span class="line"><span class="meta">#</span> 检测到master主观下线</span><br><span class="line">20573:X 19 Jan 2021 13:25:43.203 # +sdown sentinel a19143eabf9605d7a8d6276fe9f1f02adf8c744f 192.168.1.171 26379 @ redis_master 192.168.1.171 6379</span><br><span class="line">20573:X 19 Jan 2021 13:25:43.289 # +sdown master redis_master 192.168.1.171 6379</span><br><span class="line"><span class="meta">#</span> 检测到master客观下线</span><br><span class="line">20573:X 19 Jan 2021 13:25:43.382 # +odown master redis_master 192.168.1.171 6379 #quorum 2/2</span><br><span class="line"><span class="meta">#</span> 开始重新选举master</span><br><span class="line">20573:X 19 Jan 2021 13:25:43.382 # +new-epoch 1</span><br><span class="line">20573:X 19 Jan 2021 13:25:43.382 # +try-failover master redis_master 192.168.1.171 6379</span><br><span class="line">20573:X 19 Jan 2021 13:25:43.384 # +vote-for-leader 692bfddd9b7bfb87a6920588e1851a967a2d2839 1</span><br><span class="line">20573:X 19 Jan 2021 13:25:43.390 # bcc5b607e7b7fef3be5691065a5d6665201a44fd voted for 692bfddd9b7bfb87a6920588e1851a967a2d2839 1</span><br><span class="line">20573:X 19 Jan 2021 13:25:43.454 # +elected-leader master redis_master 192.168.1.171 6379</span><br><span class="line">20573:X 19 Jan 2021 13:25:43.454 # +failover-state-select-slave master redis_master 192.168.1.171 6379</span><br><span class="line">20573:X 19 Jan 2021 13:25:43.533 # +selected-slave slave 192.168.1.172:6379 192.168.1.172 6379 @ redis_master 192.168.1.171 6379</span><br><span class="line">20573:X 19 Jan 2021 13:25:43.533 * +failover-state-send-slaveof-noone slave 192.168.1.172:6379 192.168.1.172 6379 @ redis_master 192.168.1.171 6379</span><br><span class="line">20573:X 19 Jan 2021 13:25:43.634 * +failover-state-wait-promotion slave 192.168.1.172:6379 192.168.1.172 6379 @ redis_master 192.168.1.171 6379</span><br><span class="line">20573:X 19 Jan 2021 13:25:44.441 # +promoted-slave slave 192.168.1.172:6379 192.168.1.172 6379 @ redis_master 192.168.1.171 6379</span><br><span class="line"><span class="meta">#</span> 重新配置配置文件</span><br><span class="line">20573:X 19 Jan 2021 13:25:44.441 # +failover-state-reconf-slaves master redis_master 192.168.1.171 6379</span><br><span class="line">20573:X 19 Jan 2021 13:25:44.503 * +slave-reconf-sent slave 192.168.1.173:6379 192.168.1.173 6379 @ redis_master 192.168.1.171 6379</span><br><span class="line">20573:X 19 Jan 2021 13:25:45.448 * +slave-reconf-inprog slave 192.168.1.173:6379 192.168.1.173 6379 @ redis_master 192.168.1.171 6379</span><br><span class="line">20573:X 19 Jan 2021 13:25:45.448 * +slave-reconf-done slave 192.168.1.173:6379 192.168.1.173 6379 @ redis_master 192.168.1.171 6379</span><br><span class="line">20573:X 19 Jan 2021 13:25:45.531 # -odown master redis_master 192.168.1.171 6379</span><br><span class="line">20573:X 19 Jan 2021 13:25:45.531 # +failover-end master redis_master 192.168.1.171 6379</span><br><span class="line"><span class="meta">#</span> master切换到node2（192.168.1.172</span><br><span class="line">20573:X 19 Jan 2021 13:25:45.531 # +switch-master redis_master 192.168.1.171 6379 192.168.1.172 6379</span><br><span class="line">20573:X 19 Jan 2021 13:25:45.531 * +slave slave 192.168.1.173:6379 192.168.1.173 6379 @ redis_master 192.168.1.172 6379</span><br><span class="line">20573:X 19 Jan 2021 13:25:45.531 * +slave slave 192.168.1.171:6379 192.168.1.171 6379 @ redis_master 192.168.1.172 6379</span><br><span class="line"><span class="meta">#</span> node1服务处于离线状态</span><br><span class="line">20573:X 19 Jan 2021 13:26:15.550 # +sdown slave 192.168.1.171:6379 192.168.1.171 6379 @ redis_master 192.168.1.172 6379</span><br><span class="line">20573:X 19 Jan 2021 13:32:13.445 # -sdown sentinel a19143eabf9605d7a8d6276fe9f1f02adf8c744f 192.168.1.171 26379 @ redis_master 192.168.1.172 6379</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> 检查当前主节点信息，可以看到当前master为node2（192.168.1.172）</span><br><span class="line">192.168.1.172:26379&gt; info sentinel</span><br><span class="line"><span class="meta">#</span> Sentinel</span><br><span class="line">sentinel_masters:1</span><br><span class="line">sentinel_tilt:0</span><br><span class="line">sentinel_running_scripts:0</span><br><span class="line">sentinel_scripts_queue_length:0</span><br><span class="line">sentinel_simulate_failure_flags:0</span><br><span class="line">master0:name=redis_master,status=ok,address=192.168.1.172:6379,slaves=2,sentinels=3</span><br></pre></td></tr></table></figure><h3 id="重新开启node1网络"><a href="#重新开启node1网络" class="headerlink" title="重新开启node1网络"></a>重新开启node1网络</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span> 查看node1的redis状态，已经变成了slave</span><br><span class="line">[root@node1 ~]# redis-cli -p 6379</span><br><span class="line">127.0.0.1:6379&gt; auth master123..</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:6379&gt; role</span><br><span class="line">1) "slave"</span><br><span class="line">2) "192.168.1.172"</span><br><span class="line">3) (integer) 6379</span><br><span class="line">4) "connected"</span><br><span class="line">5) (integer) 248346</span><br></pre></td></tr></table></figure><h2 id="添加删除哨兵"><a href="#添加删除哨兵" class="headerlink" title="添加删除哨兵"></a>添加删除哨兵</h2><h3 id="添加"><a href="#添加" class="headerlink" title="添加"></a>添加</h3><p>添加一个新的Sentinel到您的部署是一个简单的过程，因为Sentinel实现了自动发现机制。只需要启动配置为监视当前活动master的新Sentinel。在10秒内，哨兵将获得其他哨兵的列表和附加到master的slave集合<br>如果一次添加多个哨兵，需要你一个接一个地添加，等其他哨兵都知道第一个哨兵后再添加下一个哨兵，以确保不会出现网络分区的现象<br>可以使用<code>SENTINEL MASTER mastername</code>命令来检查MASTER的SENTINEL总数</p><h3 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h3><p>Sentinel永远不会忘记已经看到的Sentinel，即使该sentinel已经离线。因此，要删除哨兵，应在没有网络分区的情况下执行以下步骤：</p><ul><li><p>停止要删除的哨兵的哨兵进程</p></li><li><p>向所有其他Sentinel实例发送<code>SENTINEL RESET *</code>命令（如果只想重置单个主机，可以使用<code>SENTINEL RESET mastername</code>），实例之间至少等待30秒。Sentinel将在接下来的10秒内刷新副本列表，只添加从当前master INFO输出正确复制的副本列表</p></li><li><p>通过检查每个Sentinel的<code>SENTINEL MASTER mastername</code>的输出，检查Sentinel的数量</p></li></ul></div><div><div><div style="text-align:center;color:#ccc;font-size:18px">-------本文结束&nbsp;<i class="fa fa-paw"></i>&nbsp;感谢阅读-------</div></div></div><div><div id="reward-container"><div>没有人会赞赏的，但万一有人想不开呢！</div> <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';"> 打赏</button><div id="qr" style="display:none"><div style="display:inline-block"> <img src="/images/wechatpay.png" alt="Nemo 微信支付"><p>微信支付</p></div></div></div></div><div><ul class="post-copyright"><li class="post-copyright-author"> <strong>本文作者：</strong> Nemo</li><li class="post-copyright-link"> <strong>本文链接：</strong> <a href="https://www.skynemo.cn/2021/01/20/数据库基础/Redis6_sentinel/" title="CentOS 7 上Redis 哨兵简介以及配置">https://www.skynemo.cn/2021/01/20/数据库基础/Redis6_sentinel/</a></li><li class="post-copyright-license"> <strong>版权声明：</strong> 本博客所有文章除特别声明外，均采用<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i> BY-NC-SA</a> 许可协议。转载请注明出处！</li></ul></div><footer class="post-footer"><div class="post-tags"><a href="/tags/数据库基础/" rel="tag"><i class="fa fa-tag"></i> 数据库基础</a><a href="/tags/redis/" rel="tag"><i class="fa fa-tag"></i> redis</a></div><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/2021/01/16/数据库基础/Redis6_master_slave/" rel="next" title="CentOS 7 上Redis 6.x主从复制配置以及复制原理"><i class="fa fa-chevron-left"></i> CentOS 7 上Redis 6.x主从复制配置以及复制原理</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"></div></div></footer></div></article></div></div><div class="comments" id="comments"></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span><span class="sidebar-toggle-line sidebar-toggle-line-middle"></span><span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap"> 文章目录</li><li class="sidebar-nav-overview" data-target="site-overview-wrap"> 站点概览</li></ul><div class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"> <img class="site-author-image" itemprop="image" src="https://skynemo-1258540788.cos.ap-chengdu.myqcloud.com/SkyNemo-Blog/icon.jpg" alt="Nemo"><p class="site-author-name" itemprop="name">Nemo</p><div class="site-description motion-element" itemprop="description"></div></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"> <a href="/archives/"><span class="site-state-item-count">28</span> <span class="site-state-item-name">日志</span></a></div><div class="site-state-item site-state-categories"> <a href="/categories/"><span class="site-state-item-count">10</span> <span class="site-state-item-name">分类</span></a></div><div class="site-state-item site-state-tags"> <a href="/tags/"><span class="site-state-item-count">23</span> <span class="site-state-item-name">标签</span></a></div></nav><div class="links-of-author motion-element"><span class="links-of-author-item"><a href="https://github.com/SkyNemo" title="GitHub &rarr; https://github.com/SkyNemo" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i> GitHub</a></span><span class="links-of-author-item"><a href="mailto:Sky.Nemo@outlook.com" title="E-Mail &rarr; mailto:Sky.Nemo@outlook.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i> E-Mail</a></span></div></div></div><div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题"><span class="nav-text">问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#哨兵的工作原理"><span class="nav-text">哨兵的工作原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#哨兵的主要作用"><span class="nav-text">哨兵的主要作用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#准备"><span class="nav-text">准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置主从"><span class="nav-text">配置主从</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#master（node1）配置"><span class="nav-text">master（node1）配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#slave（node2、node3）配置"><span class="nav-text">slave（node2、node3）配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#检查主从状态"><span class="nav-text">检查主从状态</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置哨兵"><span class="nav-text">配置哨兵</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#配置哨兵-1"><span class="nav-text">配置哨兵</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置通知脚本（可选）"><span class="nav-text">配置通知脚本（可选）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置systemd管理"><span class="nav-text">配置systemd管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#检查哨兵状态"><span class="nav-text">检查哨兵状态</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#验证故障转移"><span class="nav-text">验证故障转移</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#当前状态"><span class="nav-text">当前状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#断开node1（master）网络"><span class="nav-text">断开node1（master）网络</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重新开启node1网络"><span class="nav-text">重新开启node1网络</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#添加删除哨兵"><span class="nav-text">添加删除哨兵</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#添加"><span class="nav-text">添加</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#删除"><span class="nav-text">删除</span></a></li></ol></li></ol></div></div></div></div></aside></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright"> &copy; <span itemprop="copyrightYear">2021</span><span class="with-love" id="animate"><i class="fa fa-user"></i></span> <span class="author" itemprop="copyrightHolder">Nemo</span> <span class="post-meta-divider">|</span><span class="post-meta-item-icon"><i class="fa fa-area-chart"></i></span> <span class="post-meta-item-text">站点总字数：</span> <span title="站点总字数">50k</span></div><div class="beian-info"> <a id="icp" class="icp" target="_blank" href="http://www.beian.miit.gov.cn" rel="nofollow">闽ICP备 19013980号</a> | <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=35062702000141" style="padding-left:30px;background:url(https://skynemo-1258540788.cos.ap-chengdu.myqcloud.com/SkyNemo-Blog/beian.png) no-repeat left center" rel="nofollow">闽公网安备 35062702000141号</a></div><div class="busuanzi-count"><script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><span class="post-meta-item-icon"><i class="fa fa-user"></i></span><span class="site-uv" title="总访客量"><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span></div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script>"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script src="/lib/jquery/index.js?v=2.1.3"></script><script src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script><script src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script src="/lib/fancybox/source/jquery.fancybox.pack.js"></script><script src="/js/utils.js?v=7.1.1"></script><script src="/js/motion.js?v=7.1.1"></script><script src="/js/schemes/muse.js?v=7.1.1"></script><script src="/js/scrollspy.js?v=7.1.1"></script><script src="/js/post-details.js?v=7.1.1"></script><script src="/js/next-boot.js?v=7.1.1"></script><script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script><script src="//cdn.jsdelivr.net/npm/valine@1/dist/Valine.min.js"></script><script>var GUEST=["nick","mail","link"],guest="nick,mail";guest=guest.split(",").filter(function(e){return-1<GUEST.indexOf(e)}),new Valine({el:"#comments",verify:!1,notify:!0,appId:"I41VzzQTQa2r7Qi9KEeL9aoS-gzGzoHsz",appKey:"zNtY3Wlv61LfkJTQh2VE1x2d",placeholder:"请留下您宝贵的意见和建议！",avatar:"wavatar",meta:guest,pageSize:"5",visitor:!1,lang:"zh-cn"});var infoEle=document.querySelector("#comments .info");infoEle&&infoEle.childNodes&&0<infoEle.childNodes.length&&infoEle.childNodes.forEach(function(e){e.parentNode.removeChild(e)})</script><script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script><script>
+    
+    function addCount(Counter) {
+      var $visitors = $('.leancloud_visitors');
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+
+      Counter('get', '/classes/Counter', { where: JSON.stringify({ url }) })
+        .done(function({ results }) {
+          if (results.length > 0) {
+            var counter = results[0];
+            
+            Counter('put', '/classes/Counter/' + counter.objectId, JSON.stringify({ time: { '__op': 'Increment', 'amount': 1 } }))
+            
+              .done(function() {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.time + 1);
+              })
+            
+              .fail(function ({ responseJSON }) {
+                console.log('Failed to save Visitor num, with error message: ' + responseJSON.error);
+              })
+          } else {
+            
+              Counter('post', '/classes/Counter', JSON.stringify({ title: title, url: url, time: 1 }))
+                .done(function() {
+                  var $element = $(document.getElementById(url));
+                  $element.find('.leancloud-visitors-count').text(1);
+                })
+                .fail(function() {
+                  console.log('Failed to create');
+                });
+            
+          }
+        })
+        .fail(function ({ responseJSON }) {
+          console.log('LeanCloud Counter Error: ' + responseJSON.code + ' ' + responseJSON.error);
+        });
+    }
+    
+
+    $(function() {
+      $.get('https://app-router.leancloud.cn/2/route?appId=' + 'I41VzzQTQa2r7Qi9KEeL9aoS-gzGzoHsz')
+        .done(function({ api_server }) {
+          var Counter = function(method, url, data) {
+            return $.ajax({
+              method: method,
+              url: 'https://' + api_server + '/1.1' + url,
+              headers: {
+                'X-LC-Id': 'I41VzzQTQa2r7Qi9KEeL9aoS-gzGzoHsz',
+                'X-LC-Key': 'zNtY3Wlv61LfkJTQh2VE1x2d',
+                'Content-Type': 'application/json',
+              },
+              data: data
+            });
+          };
+          
+            addCount(Counter);
+          
+        });
+    });
+  </script><script type="text/x-mathjax-config">
+  
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
+        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
+      }
+    });
+  });
+</script><script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      document.getElementById(all[i].inputID + '-Frame').parentNode.className += ' has-jax';
+    }
+  });
+</script><script src="//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><script>$(".highlight").each(function(t,e){var n=$("<div>").addClass("highlight-wrap");$(e).after(n),n.append($("<button>").addClass("copy-btn").append("复制").on("click",function(t){var e=$(this).parent().find(".code").find(".line").map(function(t,e){return $(e).text()}).toArray().join("\n"),n=document.createElement("textarea"),o=window.pageYOffset||document.documentElement.scrollTop;n.style.top=o+"px",n.style.position="absolute",n.style.opacity="0",n.readOnly=!0,n.value=e,document.body.appendChild(n),n.select(),n.setSelectionRange(0,e.length),n.readOnly=!1,document.execCommand("copy")?$(this).text("复制成功"):$(this).text("复制失败"),n.blur(),$(this).blur()})).on("mouseleave",function(t){var e=$(this).find(".copy-btn");setTimeout(function(){e.text("复制")},300)}).append(e)})</script></body></html>
